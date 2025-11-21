@@ -29,7 +29,7 @@ public class ConsumerApp {
 
     public static void main(String[] args) {
 
-        // ----------- CONSUMER CONFIG -----------
+        // Consumer COnfig
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "order-consumer-group");
@@ -46,7 +46,7 @@ public class ConsumerApp {
         consumer.subscribe(Collections.singletonList(TOPIC));
 
 
-        // ----------- DLQ PRODUCER CONFIG -----------
+        // DLQ producer config
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 
@@ -58,7 +58,7 @@ public class ConsumerApp {
         KafkaProducer<String, Order> dlqProducer = new KafkaProducer<>(producerProps);
 
 
-        // ----------- MAIN CONSUMPTION LOOP -----------
+        // Main consumption loop
         try {
             while (true) {
 
@@ -69,7 +69,7 @@ public class ConsumerApp {
 
                     boolean processed = processWithRetry(rec, dlqProducer);
 
-                    // Always commit offset regardless of success/failure
+
                     TopicPartition tp = new TopicPartition(rec.topic(), rec.partition());
                     OffsetAndMetadata om = new OffsetAndMetadata(rec.offset() + 1);
 
@@ -84,7 +84,7 @@ public class ConsumerApp {
     }
 
 
-    // ----------- PROCESS WITH RETRY LOGIC -----------
+    // Retry logic for processing
     private static boolean processWithRetry(
             ConsumerRecord<String, Order> rec,
             KafkaProducer<String, Order> dlqProducer) {
@@ -103,7 +103,6 @@ public class ConsumerApp {
                 System.err.println("Retryable error for order " + rec.value().getOrderId() +
                         " attempt " + attempt + "/" + MAX_RETRIES);
 
-                // exponential backoff
                 try {
                     Thread.sleep((long) Math.pow(2, attempt) * 500);
                 } catch (InterruptedException ignored) {
@@ -124,7 +123,7 @@ public class ConsumerApp {
     }
 
 
-    // ----------- DLQ LOGIC -----------
+    // DLQ logic
     private static void sendToDLQ(ConsumerRecord<String, Order> rec,
                                   KafkaProducer<String, Order> dlqProducer) {
 
@@ -144,7 +143,7 @@ public class ConsumerApp {
     }
 
 
-    // ----------- ORDER PROCESSING LOGIC -----------
+    // Order processing 
     private static void processOrder(Order order)
             throws TransientProcessingException {
 
@@ -158,8 +157,6 @@ public class ConsumerApp {
         }
     }
 
-
-    // ----------- CUSTOM EXCEPTION -----------
     static class TransientProcessingException extends IOException {
         public TransientProcessingException(String msg) {
             super(msg);

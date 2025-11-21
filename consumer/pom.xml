@@ -23,7 +23,7 @@
 
     <dependencies>
 
-        <!-- Kafka Clients -->
+        <!--Adding Kafka Clients -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>

@@ -21,9 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * Streams app computing running average price per product and writing JSON to `orders-averages`.
- */
+
 public class StreamsApp {
     public static class Aggregate {
         public double sum;
@@ -45,7 +43,7 @@ public class StreamsApp {
 
         StreamsBuilder builder = new StreamsBuilder();
 
-        // use KafkaAvro (de)serializers for Order
+
         Map<String, String> serdeConfig = new HashMap<>();
         serdeConfig.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistry);
 
@@ -57,11 +55,11 @@ public class StreamsApp {
 
         KStream<String, Order> orders = builder.stream("orders", Consumed.with(Serdes.String(), orderSerde));
 
-        // Group by product (use product as key)
+
         KStream<String, Order> keyedByProduct = orders.selectKey((k, v) -> v.getProduct() == null ? null : v.getProduct().toString());
         KGroupedStream<String, Order> byProduct = keyedByProduct.groupByKey(Grouped.with(Serdes.String(), orderSerde));
 
-        // JSON serde for Aggregate
+
         JsonSerializer<Aggregate> aggSer = new JsonSerializer<>();
         JsonDeserializer<Aggregate> aggDes = new JsonDeserializer<>(Aggregate.class);
         Serde<Aggregate> aggSerde = Serdes.serdeFrom(aggSer, aggDes);

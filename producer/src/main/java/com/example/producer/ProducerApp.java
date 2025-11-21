@@ -21,13 +21,13 @@ public class ProducerApp {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
         props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
-        // strong durability and retries
+
         props.put(ProducerConfig.ACKS_CONFIG, "all");
         props.put(ProducerConfig.RETRIES_CONFIG, 3);
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 
         KafkaProducer<String, Order> producer = new KafkaProducer<>(props);
-        // DLQ producer: string serializer so DLQ doesn't depend on schema registry
+
         Properties dlqProps = new Properties();
         dlqProps.putAll(props);
         dlqProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
@@ -54,7 +54,7 @@ public class ProducerApp {
                 System.err.println("Failed to send and DLQ also failed: " + e.getMessage());
             }
 
-            Thread.sleep(200); // small gap
+            Thread.sleep(200); 
         }
 
         producer.flush();
@@ -86,17 +86,17 @@ public class ProducerApp {
                     System.err.println("Network error, attempt " + attempt + ": " + cause.getMessage());
                 } else if (cause instanceof SerializationException) {
                     System.err.println("Serialization error (non-retriable): " + cause.getMessage());
-                    // send to DLQ as JSON string
+
                     sendToDlq(dlqProducer, dlqTopic, record);
                     return;
                 } else {
                     System.err.println("Non-retriable send error: " + cause.getMessage());
-                    // final attempt: send to DLQ
+
                     sendToDlq(dlqProducer, dlqTopic, record);
                     return;
                 }
             } catch (Exception ex) {
-                // Timeout or interruption
+
                 System.err.println("Send exception (attempt " + attempt + "): " + ex.getMessage());
             }
 
@@ -105,7 +105,7 @@ public class ProducerApp {
             }
         }
 
-        // exhausted retries -> write to DLQ
+
         sendToDlq(dlqProducer, dlqTopic, record);
     }
 
