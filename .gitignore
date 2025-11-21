@@ -1,0 +1,36 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+*.classpath
+*.project
+*.settings/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.buildpath
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+
+# Build
+.gradle/
+build/
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
