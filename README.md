@@ -2,18 +2,6 @@
 
 A Apache Kafka application featuring a producer with retry logic and dead-letter queue (DLQ) support, along with a Kafka Streams application.
 
-## Features
-
-### Producer
-- **Retries on Failure**: Automatically retries up to 3 times with 1-second intervals.  
-- **Dead Letter Queue (DLQ)**: Failed messages go to `orders-dlq` for review.  
-- **Safe Delivery**: Ensures no duplicates with `acks=all`, `retries=3`, and `enable.idempotence=true`.  
-
-### Streams
-- **Average Price per Product**: Computes running averages using Kafka Streams.  
-- **JSON Output**: Sends results to `orders-averages` topic.  
-- **Stateful**: Keeps track of aggregates using KTable.  
-
 
 ## Technology Stack
 
@@ -60,8 +48,7 @@ docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 \
 ```
 .
 ├── producer/                          # Producer module
-│   ├── pom.xml
-│   ├── README.md                      # Detailed producer documentation
+│   ├── pom.xml│
 │   └── src/main/java/com/example/
 │       ├── producer/
 │       │   └── ProducerApp.java       # Producer with retry + DLQ
@@ -98,11 +85,4 @@ docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 \
 - **Non-Retriable Errors** (serialization, schema issues): Immediate routing to DLQ
 - **Max Retries**: After 3 failed attempts, message is sent to DLQ
 
-
-## Requirements
-
-- Java 17 or higher
-- Maven 3.6 or higher
-- Docker and Docker Compose
-- At least 4GB RAM available for Docker containers
 
